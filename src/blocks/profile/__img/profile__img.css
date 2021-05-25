@@ -5,6 +5,8 @@
   object-fit: cover;
   width: inherit;
   height: inherit;
+  background-position: 'center';
+  background-size: 'cover';
 }
 
 .profile__img:hover {

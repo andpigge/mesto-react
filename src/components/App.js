@@ -8,6 +8,13 @@ import ImagePopup from './ImagePopup';
 
 function App() {
 
+  const [selectedCard, setselectedCard] = React.useState({});
+
+  const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false);
+  const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
+  const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
+  const [isShowPopupImg, setShowPopupImg] = React.useState(false);
+
   function handleEditAvatarClick() {
     setEditAvatarPopupOpen(true);
   }
@@ -31,13 +38,6 @@ function App() {
     setselectedCard({name, link});
     setShowPopupImg(true);
   }
-
-  const [selectedCard, setselectedCard] = React.useState({});
-
-  const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false);
-  const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
-  const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
-  const [isShowPopupImg, setShowPopupImg] = React.useState(false);
 
   return (
     <>

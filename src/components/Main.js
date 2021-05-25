@@ -7,55 +7,35 @@ import profileEditImg from '../images/icons/profile-btn-edit.svg';
 import gifPreloader from '../images/gif/preloaderProfileImg.gif';
 
 function Main({onEditAvatar, onEditProfile, onAddPlace, onCardClick}) {
-  // Не понимаю зачем нужно для отдельных данных разбивать state, ведь удобнее передавать объект.
   // const [userData, setUserData] = React.useState({about: 'Загрузка...', name: 'Пожалуйста подождите', avatar: gifPreloader});
-  // И с помощью деструктуризации можно разбивать. Пладить state не лучшая идея.
   // const {avatar, about, name} = userData;
 
   const [userName, setUserName] = useState('Загрузка...');
   const [userDescription, setUserDescription] = useState('Пожалуйста подождите');
   const [userAvatar, setUserAvatar] = useState(gifPreloader);
 
-  // Использовать state лучше в Card.js, но пока не знаю как поднять state. Promise.all необходим чтобы вместе отобразить профиль и карточки
   const [cards, setCards] = useState([]);
 
   useEffect(() => {
-    function showData() {
-      Promise.all([Api.getInitialUser(), Api.getInitialCards()])
-        .then(([{about, avatar, name}, cardsData]) => {
 
-          // Можно было бы использовать стрелочные функции, но так немного понятнее что делает код
-          (function setSateUser() {
-            setUserName(about);
-            setUserDescription(name);
-            setUserAvatar(avatar);
-          }());
+    Promise.all([Api.getInitialUser(), Api.getInitialCards()])
+      .then(([{about, avatar, name}, cardsData]) => {
 
-          (function setSateCards() {
-            setCards(cardsData);
-          }());
+        setUserName(about);
+        setUserDescription(name);
+        setUserAvatar(avatar);
 
-        });
-    }
+        setCards(cardsData);
 
-    showData();
+      });
 
   }, []);
-
-  const backgroundImageStyle = {
-    backgroundImage: `url(${userAvatar})`,
-    // Эти свойства лучше прописать в css, но не думаю что аватар должен быть фоном
-    backgroundPosition: 'center',
-    backgroundSize: 'cover'
-  };
 
   return (
     <main className="content">
       <section className="profile content__position-center content__profile">
         <div className="profile__img-container">
-          {/* Странно, аватар это же нужный элемент во всех сайтах, он должен быть img */}
-          {/* Помню. Если прописывать в тэге style стили, нужно передовать обьект, тоесть два раза оборачивать {{}} */}
-          <img src={userAvatar} alt="Портрет" className="profile__img" style={backgroundImageStyle} />
+          <img src={userAvatar} alt="Портрет" className="profile__img" style={{backgroundImage: `url(${userAvatar})`}} />
           <img src={profileEditImg} alt="Кнопка редактирования" className="profile__edit-img" onClick={onEditAvatar} />
         </div>
         <div className="profile__about">
@@ -70,7 +50,14 @@ function Main({onEditAvatar, onEditProfile, onAddPlace, onCardClick}) {
 
       <section className="place content__position-center content__place">
         <ul className="place__list">
-          <Card cards={cards} onCardClick={onCardClick} />
+          {
+            cards.length > 0 ?
+            cards.map(card => {
+              // Передаю уникальный ключ, React сам подставит его.
+              return <Card card={card} key={card._id} onCardClick={onCardClick} />
+            }) :
+            <div className='plase__result'></div>
+          }
         </ul>
       </section>
     </main>
