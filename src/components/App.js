@@ -1,10 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
 import PopupWithForm from './PopupWithForm';
 import ImagePopup from './ImagePopup';
+import EditProfilePopup from './EditProfilePopup';
+import EditAvatarPopup from './EditAvatarPopup';
+import AddPlacePopup from './AddPlacePopup';
+
+import Api from '../utils/Api';
+
+// GIF preloader
+import gifPreloader from '../images/gif/preloaderProfileImg.gif';
+
+// Контекст
+import { CurrentUserContext } from '../contexts/сurrentUserContext';
+import { CardListContext } from '../contexts/cardListContext';
 
 function App() {
 
@@ -14,6 +26,62 @@ function App() {
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
   const [isShowPopupImg, setShowPopupImg] = React.useState(false);
+
+  //* Данные с сервера
+  const [currentUser, setCurrentUser] = React.useState({
+    about: 'Загрузка...',
+    name: 'Пожалуйста подождите',
+    avatar: gifPreloader
+  });
+
+  const [cardList, setCardList] = React.useState([]);
+  //*
+
+  useEffect(() => {
+    // Данные должны подгружаться одновремено
+    Promise.all([Api.getInitialUser(), Api.getInitialCards()])
+      .then(([ user, cardList ]) => {
+        setCurrentUser(user);
+        setCardList(cardList);
+        // console.log(user)
+        // console.log(cardList)
+      });
+  }, []);
+
+  const closePopupTouchEsc = e => {
+    if (e.key === 'Escape') {
+      closeAllPopups();
+    }
+  };
+
+  document.addEventListener('keydown', closePopupTouchEsc);
+  // if ((isEditProfilePopupOpen && isAddPlacePopupOpen && isEditAvatarPopupOpen && isShowPopupImg) === false) {
+  //   document.removeEventListener('keydown', closePopupTouchEsc);
+  // }
+
+  const handleUpdateUser = ({ profileDoes, profileName }) => {
+    Api.patchUpdateProfile(profileDoes, profileName)
+      .then(newUser => {
+        setCurrentUser(newUser);
+      });
+    closeAllPopups();
+  };
+
+  const handleUpdateAvatar = ({ avatar }) => {
+    Api.patchUpdateUserAvatar(avatar)
+      .then(newUser => {
+        setCurrentUser(newUser);
+      });
+    closeAllPopups();
+  };
+
+  const handleAddPlaceSubmit = ({ name, link }) => {
+    Api.postAddCard(name, link)
+      .then(newCard => {
+        setCardList([newCard, ...cardList]);
+      });
+    closeAllPopups();
+  };
 
   function handleEditAvatarClick() {
     setEditAvatarPopupOpen(true);
@@ -39,55 +107,67 @@ function App() {
     setShowPopupImg(true);
   }
 
+  //* Card
+  const addLike = idCard => {
+    Api.putAppendLike(idCard)
+      .then(newCard => {
+        setCardList(state => {
+          return state.map(previousСard => {
+            return previousСard._id === idCard ? newCard : previousСard;
+          });
+        });
+      });
+  };
+
+  const deleteLike = idCard => {
+    Api.deleteLike(idCard)
+      .then(newCard => {
+        setCardList(state => {
+          return state.map(previousСard => {
+            return previousСard._id === idCard ? newCard : previousСard;
+          });
+        });
+      });
+  };
+
+  const handleCardLike = card => {
+    // true лайк стоит
+    const isLiked = card.likes.some(like => like._id === currentUser._id);
+
+    isLiked ? deleteLike(card._id) : addLike(card._id);
+  };
+  //*
+
+  const handleCardDelete = card => {
+    Api.deleteCard(card._id)
+      .then(newCard => {
+        setCardList(state => {
+          return state.filter(previousСard => {
+            return previousСard._id !== card._id;
+          });
+        });
+    });
+  };
+
   return (
-    <>
-      <Header />
-      <Main onEditAvatar={handleEditAvatarClick} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onCardClick={handleCardClick} />
-      <Footer />
+    <CurrentUserContext.Provider value={ currentUser } >
+      <CardListContext.Provider value={ cardList }>
+        <Header />
+        <Main onEditAvatar={handleEditAvatarClick} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onCardClick={handleCardClick} setCardList={setCardList} onCardLike={handleCardLike} onCardDelete={handleCardDelete} />
+        <Footer />
 
-      <PopupWithForm title={'Редактировать профиль'} name={'popup_edit_profile'} isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} children={(
-        <>
-          <label className="popup__form-label">
-            <input type="text" className="popup__form-input popup__form-input_value_name" id="profile-name-input" defaultValue="Жак-Ив Кусто" placeholder="Имя" name="profileName" minLength="2" maxLength="40" required />
-            <span className="popup__error-message profile-name-input-error"></span>
-          </label>
-          <label className="popup__form-label">
-            <input type="text" className="popup__form-input popup__form-input_value_does" id="profile-does-input" defaultValue="Исследователь океана" placeholder="Деятельность" name="profileDoes" minLength="2" maxLength="200" required />
-            <span className="popup__error-message profile-does-input-error"></span>
-          </label>
-          <button className="button-popup button-popup_edit_profile" type="submit">Сохранить</button>
-        </>
-      )} />
-      <PopupWithForm title={'Новое место'} name={'popup_add_card'} isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} children={(
-        <>
-          <label className="popup__form-label">
-            <input type="text" className="popup__form-input popup__form-input_value_place" id="place-name-input" placeholder="Название" name="placeName" minLength="2" maxLength="30" required />
-            <span className="popup__error-message place-name-input-error"></span>
-          </label>
-          <label className="popup__form-label">
-            <input type="url" className="popup__form-input popup__form-input_value_img" placeholder="Ссылка на картинку" id="place-img-input" name="placeImg" required />
-            <span className="popup__error-message place-img-input-error"></span>
-          </label>
-          <button className="button-popup button-popup_add_card" type="submit">Создать</button>
-        </>
-      )} />
-      <PopupWithForm title={'Обновить аватар'} name={'popup_edit_img'} isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} children={(
-        <>
-          <label className="popup__form-label">
-            <input type="url" className="popup__form-input" id="url-img-edit" placeholder="Ссылка на картинку" name="imgEdit" required />
-            <span className="popup__error-message url-img-edit-error"></span>
-          </label>
-          <button className="button-popup button-popup_edit_img" type="submit">Сохранить</button>
-        </>
-      )} />
-      <PopupWithForm title={'Вы уверены?'} name={'popup_remove_card'} children={(
-        <>
-          <button className="button-popup button-popup_delete_card" type="submit">Да</button>
-        </>
-      )} />
+        <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
+        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
+        <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit} />
 
-      <ImagePopup card={selectedCard} name={'popup_edit_img'} isOpen={isShowPopupImg} onClose={closeAllPopups} />
-    </>
+        <PopupWithForm title={'Вы уверены?'} name={'popup_remove_card'} children={(
+          <>
+            <button className="button-popup button-popup_delete_card" type="submit">Да</button>
+          </>
+        )} />
+        <ImagePopup card={selectedCard} name={'popup_edit_img'} isOpen={isShowPopupImg} onClose={closeAllPopups} />
+      </CardListContext.Provider>
+    </CurrentUserContext.Provider>
   );
 }
 

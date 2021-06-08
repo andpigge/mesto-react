@@ -1,47 +1,51 @@
-import React, {useState, useEffect} from 'react';
-import Api from '../utils/Api.js';
+import React, { useContext } from 'react';
 
 import Card from './Card.js';
 
 import profileEditImg from '../images/icons/profile-btn-edit.svg';
-import gifPreloader from '../images/gif/preloaderProfileImg.gif';
 
-function Main({onEditAvatar, onEditProfile, onAddPlace, onCardClick}) {
-  // const [userData, setUserData] = React.useState({about: 'Загрузка...', name: 'Пожалуйста подождите', avatar: gifPreloader});
-  // const {avatar, about, name} = userData;
+// Контекст
+import { CurrentUserContext } from '../contexts/сurrentUserContext';
+import { CardListContext } from '../contexts/cardListContext';
 
-  const [userName, setUserName] = useState('Загрузка...');
-  const [userDescription, setUserDescription] = useState('Пожалуйста подождите');
-  const [userAvatar, setUserAvatar] = useState(gifPreloader);
+import Api from '../utils/Api';
 
-  const [cards, setCards] = useState([]);
+function Main({onEditAvatar, onEditProfile, onAddPlace, onCardClick, setCardList, onCardLike, onCardDelete}) {
 
-  useEffect(() => {
+  // Контекст
+  const { avatar, about, name, ...user } = useContext(CurrentUserContext);
+  // В будущем возможно карточки будут выводиться еще куда-нибудь
+  const cardList = useContext(CardListContext);
 
-    Promise.all([Api.getInitialUser(), Api.getInitialCards()])
-      .then(([{about, avatar, name}, cardsData]) => {
+  // const handleCardLike = card => {
+  //   // true лайк стоит
+  //   const isLiked = card.likes.some(like => like._id === user._id);
 
-        setUserName(about);
-        setUserDescription(name);
-        setUserAvatar(avatar);
+  //   isLiked ? deleteLike(card._id) : addLike(card._id);
+  // };
 
-        setCards(cardsData);
-
-      });
-
-  }, []);
+  // const handleCardDelete = card => {
+  //   Api.deleteCard(card._id)
+  //     .then(newCard => {
+  //       setCardList(state => {
+  //         return state.filter(previousСard => {
+  //           return previousСard._id !== card._id;
+  //         });
+  //       });
+  //   });
+  // };
 
   return (
     <main className="content">
       <section className="profile content__position-center content__profile">
         <div className="profile__img-container">
-          <img src={userAvatar} alt="Портрет" className="profile__img" style={{backgroundImage: `url(${userAvatar})`}} />
+          <img src={avatar} alt="Портрет" className="profile__img" style={{backgroundImage: `url(${avatar})`}} />
           <img src={profileEditImg} alt="Кнопка редактирования" className="profile__edit-img" onClick={onEditAvatar} />
         </div>
         <div className="profile__about">
           <div className="profile__container-text">
-            <h1 className="profile__title-name">{userName}</h1>
-            <p className="profile__subtitle-does">{userDescription}</p>
+            <h1 className="profile__title-name">{about}</h1>
+            <p className="profile__subtitle-does">{name}</p>
           </div>
           <button className="profile__edit-btn" type="button" onClick={onEditProfile}></button>
         </div>
@@ -51,11 +55,12 @@ function Main({onEditAvatar, onEditProfile, onAddPlace, onCardClick}) {
       <section className="place content__position-center content__place">
         <ul className="place__list">
           {
-            cards.length > 0 ?
-            cards.map(card => {
+            cardList.length > 0 ?
+            cardList.map(card => {
               // Передаю уникальный ключ, React сам подставит его.
-              return <Card card={card} key={card._id} onCardClick={onCardClick} />
+              return <Card card={card} key={card._id} onCardClick={onCardClick} onCardLike={onCardLike} onCardDelete={onCardDelete} />
             }) :
+            // Это прелоадер
             <div className='plase__result'></div>
           }
         </ul>
