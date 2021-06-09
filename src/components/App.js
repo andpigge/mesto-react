@@ -9,7 +9,7 @@ import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import ConfirmRemove from './ConfirmRemove';
 
-import api from '../utils/api';
+import Api from '../utils/api';
 
 // GIF preloader
 import gifPreloader from '../images/gif/preloaderProfileImg.gif';
@@ -43,7 +43,7 @@ function App() {
 
   useEffect(() => {
     // Данные должны подгружаться одновремено
-    Promise.all([api.getInitialUser(), api.getInitialCards()])
+    Promise.all([Api.getInitialUser(), Api.getInitialCards()])
       .then(([ user, cardList ]) => {
         setCurrentUser(user);
         setCardList(cardList);
@@ -68,7 +68,7 @@ function App() {
   }, [isEditProfilePopupOpen, isAddPlacePopupOpen, isEditAvatarPopupOpen, isShowPopupImg]);
 
   const handleUpdateUser = ({ profileDoes, profileName }) => {
-    api.patchUpdateProfile(profileDoes, profileName)
+    Api.patchUpdateProfile(profileDoes, profileName)
       .then(newUser => {
         setCurrentUser(newUser);
       });
@@ -76,7 +76,7 @@ function App() {
   };
 
   const handleUpdateAvatar = ({ avatar }) => {
-    api.patchUpdateUserAvatar(avatar)
+    Api.patchUpdateUserAvatar(avatar)
       .then(newUser => {
         setCurrentUser(newUser);
       });
@@ -84,7 +84,7 @@ function App() {
   };
 
   const handleAddPlaceSubmit = ({ name, link }) => {
-    api.postAddCard(name, link)
+    Api.postAddCard(name, link)
       .then(newCard => {
         setCardList([newCard, ...cardList]);
       });
@@ -123,7 +123,7 @@ function App() {
 
   //* Card
   const addLike = idCard => {
-    api.putAppendLike(idCard)
+    Api.putAppendLike(idCard)
       .then(newCard => {
         setCardList(state => {
           return state.map(previousСard => {
@@ -134,7 +134,7 @@ function App() {
   };
 
   const deleteLike = idCard => {
-    api.deleteLike(idCard)
+    Api.deleteLike(idCard)
       .then(newCard => {
         setCardList(state => {
           return state.map(previousСard => {
@@ -153,7 +153,7 @@ function App() {
   //*
 
   const handleCardDelete = () => {
-    api.deleteCard(cardRemove._id)
+    Api.deleteCard(cardRemove._id)
       .then(newCard => {
         setCardList(state => {
           return state.filter(previousСard => {
