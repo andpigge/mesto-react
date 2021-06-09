@@ -3,11 +3,11 @@ import React, { useEffect } from 'react';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
-import PopupWithForm from './PopupWithForm';
 import ImagePopup from './ImagePopup';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
+import ConfirmRemove from './ConfirmRemove';
 
 import Api from '../utils/Api';
 
@@ -17,6 +17,7 @@ import gifPreloader from '../images/gif/preloaderProfileImg.gif';
 // Контекст
 import { CurrentUserContext } from '../contexts/сurrentUserContext';
 import { CardListContext } from '../contexts/cardListContext';
+import {  ValidationFormContext, validation } from '../contexts/validationFormContext';
 
 function App() {
 
@@ -26,6 +27,9 @@ function App() {
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
   const [isShowPopupImg, setShowPopupImg] = React.useState(false);
+  const [isConfirmPoppup, setConfirmPoppup] = React.useState(false);
+
+  const [cardRemove, setCardRemove] = React.useState({});
 
   //* Данные с сервера
   const [currentUser, setCurrentUser] = React.useState({
@@ -54,10 +58,14 @@ function App() {
     }
   };
 
-  document.addEventListener('keydown', closePopupTouchEsc);
-  // if ((isEditProfilePopupOpen && isAddPlacePopupOpen && isEditAvatarPopupOpen && isShowPopupImg) === false) {
-  //   document.removeEventListener('keydown', closePopupTouchEsc);
-  // }
+  useEffect(() => {
+    if (isEditProfilePopupOpen || isAddPlacePopupOpen || isEditAvatarPopupOpen || isShowPopupImg) {
+      document.addEventListener('keydown', closePopupTouchEsc);
+    }
+    return () => {
+      document.removeEventListener('keydown', closePopupTouchEsc);
+    };
+  }, [isEditProfilePopupOpen, isAddPlacePopupOpen, isEditAvatarPopupOpen, isShowPopupImg]);
 
   const handleUpdateUser = ({ profileDoes, profileName }) => {
     Api.patchUpdateProfile(profileDoes, profileName)
@@ -95,11 +103,17 @@ function App() {
     setAddPlacePopupOpen(true);
   }
 
+  function handleDeleteCardClick(card) {
+    setConfirmPoppup(true);
+    setCardRemove(card);
+  }
+
   function closeAllPopups() {
     setEditAvatarPopupOpen(false);
     setEditProfilePopupOpen(false);
     setAddPlacePopupOpen(false);
     setShowPopupImg(false);
+    setConfirmPoppup(false);
   }
 
   function handleCardClick(name, link) {
@@ -138,14 +152,15 @@ function App() {
   };
   //*
 
-  const handleCardDelete = card => {
-    Api.deleteCard(card._id)
+  const handleCardDelete = () => {
+    Api.deleteCard(cardRemove._id)
       .then(newCard => {
         setCardList(state => {
           return state.filter(previousСard => {
-            return previousСard._id !== card._id;
+            return previousСard._id !== cardRemove._id;
           });
-        });
+        })
+        closeAllPopups();
     });
   };
 
@@ -153,18 +168,16 @@ function App() {
     <CurrentUserContext.Provider value={ currentUser } >
       <CardListContext.Provider value={ cardList }>
         <Header />
-        <Main onEditAvatar={handleEditAvatarClick} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onCardClick={handleCardClick} setCardList={setCardList} onCardLike={handleCardLike} onCardDelete={handleCardDelete} />
+        <Main onEditAvatar={handleEditAvatarClick} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onCardClick={handleCardClick} setCardList={setCardList} onCardLike={handleCardLike} onCardDelete={handleDeleteCardClick} />
         <Footer />
 
-        <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
-        <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
-        <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit} />
+        <ValidationFormContext.Provider value={ validation }>
+          <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
+          <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
+          <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit} />
+          <ConfirmRemove isOpen={isConfirmPoppup} onClose={closeAllPopups} onRemoveCard={handleCardDelete} />
+        </ValidationFormContext.Provider>
 
-        <PopupWithForm title={'Вы уверены?'} name={'popup_remove_card'} children={(
-          <>
-            <button className="button-popup button-popup_delete_card" type="submit">Да</button>
-          </>
-        )} />
         <ImagePopup card={selectedCard} name={'popup_edit_img'} isOpen={isShowPopupImg} onClose={closeAllPopups} />
       </CardListContext.Provider>
     </CurrentUserContext.Provider>

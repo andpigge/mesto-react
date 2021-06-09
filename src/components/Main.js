@@ -8,12 +8,10 @@ import profileEditImg from '../images/icons/profile-btn-edit.svg';
 import { CurrentUserContext } from '../contexts/сurrentUserContext';
 import { CardListContext } from '../contexts/cardListContext';
 
-import Api from '../utils/Api';
-
 function Main({onEditAvatar, onEditProfile, onAddPlace, onCardClick, setCardList, onCardLike, onCardDelete}) {
 
   // Контекст
-  const { avatar, about, name, ...user } = useContext(CurrentUserContext);
+  const { avatar, about, name } = useContext(CurrentUserContext);
   // В будущем возможно карточки будут выводиться еще куда-нибудь
   const cardList = useContext(CardListContext);
 
