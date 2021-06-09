@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 
 // Контекст
-import { CurrentUserContext } from '../contexts/сurrentUserContext';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
 function Card({ card, onCardClick, onCardLike, onCardDelete }) {
   // Деструктуризация

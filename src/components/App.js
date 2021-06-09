@@ -9,13 +9,13 @@ import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import ConfirmRemove from './ConfirmRemove';
 
-import Api from '../utils/Api';
+import Api from '../utils/api';
 
 // GIF preloader
 import gifPreloader from '../images/gif/preloaderProfileImg.gif';
 
 // Контекст
-import { CurrentUserContext } from '../contexts/сurrentUserContext';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import { CardListContext } from '../contexts/cardListContext';
 import {  ValidationFormContext, validation } from '../contexts/validationFormContext';
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import PopupWithForm from './PopupWithForm';
 
 // Контекст
-import { CurrentUserContext } from '../contexts/сurrentUserContext';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import { ValidationFormContext } from '../contexts/validationFormContext';
 
 function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {

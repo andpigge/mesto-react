@@ -5,7 +5,7 @@ import Card from './Card.js';
 import profileEditImg from '../images/icons/profile-btn-edit.svg';
 
 // Контекст
-import { CurrentUserContext } from '../contexts/сurrentUserContext';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import { CardListContext } from '../contexts/cardListContext';
 
 function Main({onEditAvatar, onEditProfile, onAddPlace, onCardClick, setCardList, onCardLike, onCardDelete}) {
