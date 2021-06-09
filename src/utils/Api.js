@@ -1,6 +1,7 @@
 import {apiServeMesto} from './constants.js';
 const {CONECT_SERVER, TOKEN, COHORT_ID, PATHS} = apiServeMesto;
 
+// Попросили назвать класс с маленькой буквы
 class Api {
   #baseUrl
   #headers
