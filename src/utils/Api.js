@@ -2,7 +2,7 @@ import {apiServeMesto} from './constants.js';
 const {CONECT_SERVER, TOKEN, COHORT_ID, PATHS} = apiServeMesto;
 
 // Попросили назвать класс с маленькой буквы
-class Api {
+class api {
   #baseUrl
   #headers
   #pathUser
@@ -89,7 +89,7 @@ class Api {
   }
 }
 
-export default new Api({
+export default new api({
   baseUrl: `${CONECT_SERVER}/${COHORT_ID}`,
   headers: {
     authorization: TOKEN,
