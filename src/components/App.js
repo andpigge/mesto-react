@@ -41,14 +41,14 @@ function App() {
   const [cardList, setCardList] = React.useState([]);
   //*
 
+  const [isLoadingData, setIsLoadingData] = React.useState(false);
+
   useEffect(() => {
     // Данные должны подгружаться одновремено
     Promise.all([Api.getInitialUser(), Api.getInitialCards()])
       .then(([ user, cardList ]) => {
         setCurrentUser(user);
         setCardList(cardList);
-        // console.log(user)
-        // console.log(cardList)
       });
   }, []);
 
@@ -67,28 +67,37 @@ function App() {
     };
   }, [isEditProfilePopupOpen, isAddPlacePopupOpen, isEditAvatarPopupOpen, isShowPopupImg]);
 
+  //*
   const handleUpdateUser = ({ profileDoes, profileName }) => {
+    setIsLoadingData(true);
     Api.patchUpdateProfile(profileDoes, profileName)
       .then(newUser => {
         setCurrentUser(newUser);
+        closeAllPopups();
+      })
+      .finally(() => {
+        setIsLoadingData(false);
       });
-    closeAllPopups();
   };
 
   const handleUpdateAvatar = ({ avatar }) => {
+    setIsLoadingData(true);
     Api.patchUpdateUserAvatar(avatar)
       .then(newUser => {
         setCurrentUser(newUser);
+        closeAllPopups();
+      })
+      .finally(() => {
+        setIsLoadingData(false);
       });
-    closeAllPopups();
   };
 
   const handleAddPlaceSubmit = ({ name, link }) => {
     Api.postAddCard(name, link)
       .then(newCard => {
         setCardList([newCard, ...cardList]);
+        closeAllPopups();
       });
-    closeAllPopups();
   };
 
   function handleEditAvatarClick() {
@@ -153,6 +162,7 @@ function App() {
   //*
 
   const handleCardDelete = () => {
+    setIsLoadingData(true);
     Api.deleteCard(cardRemove._id)
       .then(newCard => {
         setCardList(state => {
@@ -161,6 +171,9 @@ function App() {
           });
         })
         closeAllPopups();
+    })
+    .finally(() => {
+      setIsLoadingData(false);
     });
   };
 
@@ -168,14 +181,13 @@ function App() {
     <CurrentUserContext.Provider value={ currentUser } >
       <CardListContext.Provider value={ cardList }>
         <Header />
-        <Main onEditAvatar={handleEditAvatarClick} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onCardClick={handleCardClick} setCardList={setCardList} onCardLike={handleCardLike} onCardDelete={handleDeleteCardClick} />
+        <Main onEditAvatar={handleEditAvatarClick} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onCardClick={handleCardClick} onCardLike={handleCardLike} onCardDelete={handleDeleteCardClick} />
         <Footer />
-
         <ValidationFormContext.Provider value={ validation }>
-          <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
-          <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
-          <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit} />
-          <ConfirmRemove isOpen={isConfirmPoppup} onClose={closeAllPopups} onRemoveCard={handleCardDelete} />
+          <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} loading={isLoadingData} />
+          <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} loading={isLoadingData} />
+          <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit} loading={isLoadingData} />
+          <ConfirmRemove isOpen={isConfirmPoppup} onClose={closeAllPopups} onRemoveCard={handleCardDelete} loading={isLoadingData} />
         </ValidationFormContext.Provider>
 
         <ImagePopup card={selectedCard} name={'popup_edit_img'} isOpen={isShowPopupImg} onClose={closeAllPopups} />

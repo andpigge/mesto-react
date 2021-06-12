@@ -8,30 +8,11 @@ import profileEditImg from '../images/icons/profile-btn-edit.svg';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import { CardListContext } from '../contexts/cardListContext';
 
-function Main({onEditAvatar, onEditProfile, onAddPlace, onCardClick, setCardList, onCardLike, onCardDelete}) {
+function Main({onEditAvatar, onEditProfile, onAddPlace, onCardClick, onCardLike, onCardDelete}) {
 
   // Контекст
   const { avatar, about, name } = useContext(CurrentUserContext);
-  // В будущем возможно карточки будут выводиться еще куда-нибудь
   const cardList = useContext(CardListContext);
-
-  // const handleCardLike = card => {
-  //   // true лайк стоит
-  //   const isLiked = card.likes.some(like => like._id === user._id);
-
-  //   isLiked ? deleteLike(card._id) : addLike(card._id);
-  // };
-
-  // const handleCardDelete = card => {
-  //   Api.deleteCard(card._id)
-  //     .then(newCard => {
-  //       setCardList(state => {
-  //         return state.filter(previousСard => {
-  //           return previousСard._id !== card._id;
-  //         });
-  //       });
-  //   });
-  // };
 
   return (
     <main className="content">
