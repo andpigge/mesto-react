@@ -26,23 +26,27 @@ function Card({ card, onCardClick, onCardLike, onCardDelete }) {
     return 'card-place__like-btn';
   };
 
+  const cardClick = () => {
+    onCardClick(name, link);
+  };
+
+  const cardLike = () => {
+    onCardLike(card)
+  };
+
   return (
-    <>
-      <li className="place__item">
-        <div className="card-place">
-          <button className={ toggleClassIcon() } onClick={() => onCardDelete(card)}></button>
-          <img src={link} alt={name} className="card-place__img" onClick={() => onCardClick(name, link)} />
-          <h2 className="card-place__title">
-          {name}
-          </h2>
-          <div className="card-place__likes">
-          <button className={ isLiked() } type="button" onClick={() => onCardLike(card)}></button>
-          <span className="card-place__counter">{ likes.length }</span>
-          </div>
-        </div>
-      </li>
-    </>
-    );
+    <div className="card-place">
+      <button className={ toggleClassIcon() } onClick={() => onCardDelete(card)} />
+      <img src={link} alt={name} className="card-place__img" onClick={cardClick} />
+      <h2 className="card-place__title">
+      {name}
+      </h2>
+      <div className="card-place__likes">
+      <button className={ isLiked() } type="button" onClick={cardLike} />
+      <span className="card-place__counter">{ likes.length }</span>
+      </div>
+    </div>
+  );
 }
 
 export default Card;

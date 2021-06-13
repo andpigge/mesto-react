@@ -45,7 +45,7 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser, loading }) {
     });
   }
 
-  const handleSbmit = e => {
+  const handleSabmit = e => {
     e.preventDefault();
 
     // Передаём значения управляемых компонентов во внешний обработчик
@@ -53,7 +53,7 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser, loading }) {
   };
 
   return (
-    <PopupWithForm title={'Редактировать профиль'} name={'popup_edit_profile'} isOpen={isOpen} onClose={onClose} onSubmit={handleSbmit} children={(
+    <PopupWithForm title={'Редактировать профиль'} name={'popup_edit_profile'} isOpen={isOpen} onClose={onClose} onSubmit={handleSabmit}>
       <>
         <label className="popup__form-label">
           {/* С помощью value и onChange создал управляющий компонент, где содержимое берется из state компонента */}
@@ -68,7 +68,7 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser, loading }) {
           {loading ? 'Сохранить...' : 'Сохранить'}
         </button>
       </>
-    )} />
+    </PopupWithForm>
   );
 }
 

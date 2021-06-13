@@ -41,7 +41,7 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace, loading }) {
   }
 
   return (
-    <PopupWithForm title={'Новое место'} name={'popup_add_card'} isOpen={isOpen} onClose={resetFormFieldsOnClose} onSubmit={handleSubmit} children={(
+    <PopupWithForm title={'Новое место'} name={'popup_add_card'} isOpen={isOpen} onClose={resetFormFieldsOnClose} onSubmit={handleSubmit}>
       <>
         <label className="popup__form-label">
           <input type="text" className="popup__form-input popup__form-input_value_place" id="place-name-input" placeholder="Название" name="placeName" minLength="2" maxLength="30" required value={placeName} onChange={e => setPlaceName(e.target.value)} style={{borderBottom: !isValidPlaceName ? '1px solid red' : ''}} />
@@ -55,7 +55,7 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace, loading }) {
           {loading ? 'Создать...' : 'Создать'}
         </button>
       </>
-    )} />
+    </PopupWithForm>
   );
 }
 

@@ -26,9 +26,9 @@ function Main({onEditAvatar, onEditProfile, onAddPlace, onCardClick, onCardLike,
             <h1 className="profile__title-name">{about}</h1>
             <p className="profile__subtitle-does">{name}</p>
           </div>
-          <button className="profile__edit-btn" type="button" onClick={onEditProfile}></button>
+          <button className="profile__edit-btn" type="button" onClick={onEditProfile} />
         </div>
-        <button className="profile__add-card-place" type="button" onClick={onAddPlace}></button>
+        <button className="profile__add-card-place" type="button" onClick={onAddPlace} />
       </section>
 
       <section className="place content__position-center content__place">
@@ -36,11 +36,13 @@ function Main({onEditAvatar, onEditProfile, onAddPlace, onCardClick, onCardLike,
           {
             cardList.length > 0 ?
             cardList.map(card => {
-              // Передаю уникальный ключ, React сам подставит его.
-              return <Card card={card} key={card._id} onCardClick={onCardClick} onCardLike={onCardLike} onCardDelete={onCardDelete} />
+              return <li className="place__item" key={card._id}>
+              {/* Передаю уникальный ключ, React сам подставит его. */}
+                <Card card={card} onCardClick={onCardClick} onCardLike={onCardLike} onCardDelete={onCardDelete} />
+              </li>
             }) :
             // Это прелоадер
-            <div className='plase__result'></div>
+            <div className='place__result'></div>
           }
         </ul>
       </section>

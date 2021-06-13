@@ -52,13 +52,13 @@ function App() {
       });
   }, []);
 
-  const closePopupTouchEsc = e => {
-    if (e.key === 'Escape') {
-      closeAllPopups();
-    }
-  };
-
   useEffect(() => {
+    const closePopupTouchEsc = e => {
+      if (e.key === 'Escape') {
+        closeAllPopups();
+      }
+    };
+
     if (isEditProfilePopupOpen || isAddPlacePopupOpen || isEditAvatarPopupOpen || isShowPopupImg) {
       document.addEventListener('keydown', closePopupTouchEsc);
     }
@@ -135,8 +135,8 @@ function App() {
     Api.putAppendLike(idCard)
       .then(newCard => {
         setCardList(state => {
-          return state.map(previousСard => {
-            return previousСard._id === idCard ? newCard : previousСard;
+          return state.map(previousCard => {
+            return previousCard._id === idCard ? newCard : previousCard;
           });
         });
       });
@@ -146,8 +146,8 @@ function App() {
     Api.deleteLike(idCard)
       .then(newCard => {
         setCardList(state => {
-          return state.map(previousСard => {
-            return previousСard._id === idCard ? newCard : previousСard;
+          return state.map(previousCard => {
+            return previousCard._id === idCard ? newCard : previousCard;
           });
         });
       });
@@ -166,8 +166,8 @@ function App() {
     Api.deleteCard(cardRemove._id)
       .then(newCard => {
         setCardList(state => {
-          return state.filter(previousСard => {
-            return previousСard._id !== cardRemove._id;
+          return state.filter(previousCard => {
+            return previousCard._id !== cardRemove._id;
           });
         })
         closeAllPopups();
